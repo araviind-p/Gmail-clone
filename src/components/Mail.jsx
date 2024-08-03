@@ -12,7 +12,7 @@ import {motion} from 'framer-motion'
 
 function Mail() {
   const navigate = useNavigate()
-  const { selectedEmail } = useSelector(store => store.appSlice)
+  const { selectedEmail,sideBarOpen } = useSelector(store => store.appSlice)
   const params = useParams()
 
   const deleteMailById = async (id) => {
@@ -28,7 +28,7 @@ function Mail() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className='flex-1 bg-white rounded-xl mx-5'>
+      className='flex-1 bg-white rounded-xl mx-5 justify-center items-center'>
       <div className='flex items-center justify-between px-4'>
         <div className='flex items-center gap-2 text-gray-700 py-2'>
           <div onClick={() => navigate("/")} className='p-2 rounded-full hover:bg-gray-100 cursor-pointer'>
@@ -64,7 +64,7 @@ function Mail() {
           <button className='hover:rounded-full hover:bg-gray-100'><MdKeyboardArrowRight size="24px" /></button>
         </div>
       </div>
-      <div className='h-[90dvh] overflow-y-auto p-4'>
+      <div className='h-[90dvh] w-[90%] overflow-y-auto p-4'>
         <div className='flex items-center justify-between bg-white gap-1'>
           <div className='flex items-center gap-2'>
             <h1 className='text-xl font-medium '>{selectedEmail?.subject}</h1>

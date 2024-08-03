@@ -4,6 +4,7 @@ import { FaCaretDown, FaUserFriends } from "react-icons/fa";
 import { IoMdMore, IoMdRefresh } from 'react-icons/io';
 import { GoTag } from "react-icons/go";
 import Messages from './Messages';
+import { useSelector } from 'react-redux';
 
 const mailType = [
     {
@@ -22,10 +23,11 @@ const mailType = [
 
 function Inbox() {
     const [mailTypeSelected, setMailTypeSelected] = useState(0)
+    const { sideBarOpen } = useSelector(store => store.appSlice)
     return (
-        <div className='flex-1 bg-white rounded-xl mx-5'>
-            <div className='flex items-center justify-between px-4'>
-                <div className='flex items-center gap-2 text-gray-700 py-2'>
+        <div className={`${sideBarOpen && "hidden"} flex-1 rounded-xl w-dvh`}>
+            <div className='flex items-center justify-between px-4 overflow-y-hidden'>
+                <div className='flex items-center gap-2 text-gray-700 py-2 '>
                     <div className='flex items-center gap-1'>
                         <MdCropSquare size={'20px'} />
                         <FaCaretDown size={'20px'} />
@@ -44,13 +46,13 @@ function Inbox() {
                 </div>
             </div>
             <div className='h-[90dvh] overflow-y-auto'>
-                <div className='flex items-center gap-1'>
+                <div className='flex items-center gap-4 justify-start w-screen'>
                     {
                         mailType.map((item, index) => {
                             return (
                                 <button
                                     key={index}
-                                    className={`${mailTypeSelected === index ? 'border-b-4 border-b-blue-600 text-blue-600' : 'border-b-4 border-b-transparent'} flex items-center gap-5 p-4 w-52 hover:bg-gray-100`}
+                                    className={`${mailTypeSelected === index ? 'border-b-4 border-b-blue-600 text-blue-600' : 'border-b-4 border-b-transparent'} flex items-center gap-4 p-1 md:p-4 w-auto hover:bg-gray-100`}
                                     onClick={() => setMailTypeSelected(index)}
                                 >
                                     {item.icon}
@@ -60,7 +62,9 @@ function Inbox() {
                         })
                     }
                 </div>
-                <Messages />
+                <div className='flex justify-center items-center'>
+                    <Messages />
+                </div>
             </div>
         </div>
     )

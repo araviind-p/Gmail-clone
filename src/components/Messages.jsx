@@ -4,9 +4,10 @@ import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { db } from '../firebase'
 import { useDispatch, useSelector } from 'react-redux'
 import { setEmails } from '../redux/appSlice'
+import Sidebar from './Sidebar'
 
 function Messages() {
-  const { emails, searchText } = useSelector(store => store.appSlice)
+  const { emails, searchText, sideBarOpen } = useSelector(store => store.appSlice)
   const [tempEmails, setTempEmails] = useState(emails);
   const dispatch = useDispatch()
 
@@ -29,9 +30,16 @@ function Messages() {
     setTempEmails(filteredEmail)
   }, [searchText, emails])
   return (
-    <div>
+    <div className='overflow-x-hidden w-[98%] '>
+
+      {/* {
+        sideBarOpen && (
+          <Sidebar />
+        )
+      } */}
+
       {
-        tempEmails && tempEmails?.map((email) => <Message key={email.id} email={email} />)
+        (tempEmails && !sideBarOpen) && tempEmails?.map((email) => <Message key={email.id} email={email} />)
       }
 
     </div>
