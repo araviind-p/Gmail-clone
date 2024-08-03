@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { MdCropSquare, MdInbox } from 'react-icons/md'
+import { MdCropSquare, MdInbox, MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 import { FaCaretDown, FaUserFriends } from "react-icons/fa";
 import { IoMdMore, IoMdRefresh } from 'react-icons/io';
 import { GoTag } from "react-icons/go";
+import Messages from './Messages';
 
 const mailType = [
     {
@@ -36,6 +37,11 @@ function Inbox() {
                         <IoMdMore size={'20px'} />
                     </div>
                 </div>
+                <div className='flex items-center gap-2'>
+                    <p className=' text-sm text-gray-500'>1-50 of 1000</p>
+                    <button className='hover:rounded-full hover:bg-gray-100'><MdKeyboardArrowLeft size="24px" /></button>
+                    <button className='hover:rounded-full hover:bg-gray-100'><MdKeyboardArrowRight size="24px" /></button>
+                </div>
             </div>
             <div className='h-[90dvh] overflow-y-auto'>
                 <div className='flex items-center gap-1'>
@@ -45,7 +51,7 @@ function Inbox() {
                                 <button
                                     key={index}
                                     className={`${mailTypeSelected === index ? 'border-b-4 border-b-blue-600 text-blue-600' : 'border-b-4 border-b-transparent'} flex items-center gap-5 p-4 w-52 hover:bg-gray-100`}
-                                    onClick={()=>setMailTypeSelected(index)}
+                                    onClick={() => setMailTypeSelected(index)}
                                 >
                                     {item.icon}
                                     <span>{item.text}</span>
@@ -54,6 +60,7 @@ function Inbox() {
                         })
                     }
                 </div>
+                <Messages />
             </div>
         </div>
     )
