@@ -1,11 +1,11 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import {GoogleAuthProvider, getAuth} from "firebase/auth"
-import {getFirestore} from "firebase/firestore"
+import { GoogleAuthProvider, getAuth } from "firebase/auth"
+import { getFirestore } from "firebase/firestore"
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAKD-13FBI_sUeTdYtt_PGlqP1myMtTYqE",
+  apiKey: import.meta.env.VITE_FIREBASE_API,
   authDomain: "clone-f2409.firebaseapp.com",
   projectId: "clone-f2409",
   storageBucket: "clone-f2409.appspot.com",

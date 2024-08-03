@@ -31,7 +31,7 @@ function Messages() {
   return (
     <div>
       {
-        tempEmails && tempEmails?.map((email) => <Message email={email} />)
+        tempEmails && tempEmails?.map((email) => <Message key={email.id} email={email} />)
       }
 
     </div>
