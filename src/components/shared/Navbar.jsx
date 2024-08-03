@@ -5,15 +5,31 @@ import { CiCircleQuestion } from "react-icons/ci";
 import { IoSettingsOutline } from "react-icons/io5";
 import { PiDotsNineBold } from "react-icons/pi";
 import Avatar from 'react-avatar';
-import { useDispatch } from 'react-redux';
-import { setSearchText } from '../../redux/appSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSearchText, setUser } from '../../redux/appSlice';
+import { AnimatePresence, motion } from 'framer-motion';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../firebase';
 
 function Navbar() {
     const [input, setInput] = useState('')
+    const [toggle, setToggle] = useState(false)
+
+    const { user } = useSelector(store => store.appSlice)
     const dispatch = useDispatch()
+
+    const signOutHandler = () => {
+        signOut(auth).then(() => {
+            dispatch(setUser(null))
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
+
     useEffect(() => {
         dispatch(setSearchText(input))
     }, [input])
+
     return (
         <div className='flex justify-between items-center mx-3 h-16'>
             <div className='flex items-center gap-10'>
@@ -48,8 +64,25 @@ function Navbar() {
                     <div className='p-3 rounded-full hover:bg-gray-100 cursor-pointer'>
                         <PiDotsNineBold size={'20px'} />
                     </div>
-                    <div className='cursor-pointer '>
-                        <Avatar src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcyI9Cvp53aaP9XeRn-ZKbJDH2QaWC72O26A&s' size='40' round={true} />
+                    <div className='cursor-pointer relative'>
+                        <Avatar
+                            onClick={() => setToggle(!toggle)}
+                            src={user?.photoURL} size='40' round={true} />
+                        <AnimatePresence>
+                            {
+                                toggle && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                        transition={{ duration: 0.1 }}
+                                        className='absolute right-2 z-20 shadow-lg bg-white rounded-md'
+                                    >
+                                        <p onClick={signOutHandler} className='p-2 text-red-500'>Logout</p>
+                                    </motion.div>
+                                )
+                            }
+                        </AnimatePresence>
                     </div>
                 </div>
             </div>
