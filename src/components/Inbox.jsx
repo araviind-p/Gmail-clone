@@ -62,8 +62,10 @@ function Inbox() {
                         })
                     }
                 </div>
-                <div className='flex justify-center items-center'>
-                    <Messages />
+                <div className='flex w-screen justify-center'>
+                    <div className='flex justify-center items-center w-11/12'>
+                        <Messages />
+                    </div>
                 </div>
             </div>
         </div>
