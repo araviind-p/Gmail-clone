@@ -4,7 +4,9 @@ import { LuPencil } from "react-icons/lu";
 import { MdOutlineDrafts, MdOutlineKeyboardArrowDown, MdOutlineWatchLater } from "react-icons/md";
 import { TbSend2 } from "react-icons/tb";
 import { useDispatch, useSelector } from 'react-redux';
-import { setOpen } from '../redux/appSlice';
+import { setLoading, setOpen, setSideBarOpen } from '../redux/appSlice';
+import ArchievedMails from './ArchievedMails';
+import { useNavigate } from 'react-router-dom';
 
 const sidebarItems = [
     {
@@ -38,6 +40,16 @@ function Sidebar() {
 
     const dispatch = useDispatch()
     const { sideBarOpen } = useSelector(Store => Store.appSlice)
+    const navigate = useNavigate()
+
+    const handleClick = (text) => {
+        if (text === "Starred") {
+            dispatch(setLoading(true))
+            dispatch(setSideBarOpen(false))
+            dispatch(setLoading(false))
+            navigate('/starred')
+        }
+    }
     return (
         <div className={`${sideBarOpen}? 'block': 'hidden' w-[100%] md:block md:w-[15%]`}>
             <div className='p-3'>
@@ -50,7 +62,9 @@ function Sidebar() {
                 {
                     sidebarItems.map((item, index) => {
                         return (
-                            <div key={index} className='flex items-center gap-4 pl-6 py-1 rounded-full hover:cursor-pointer hover:bg-gray-200 my-2'>
+                            <div key={index}
+                                onClick={() => handleClick(item.text)}
+                                className='flex items-center gap-4 pl-6 py-1 rounded-full hover:cursor-pointer hover:bg-gray-200 my-2'>
                                 {item.icon}
                                 <p>{item.text}</p>
                             </div>

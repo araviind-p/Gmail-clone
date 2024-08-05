@@ -1,19 +1,22 @@
 import React from 'react'
 import { IoMdArrowBack, IoMdMore } from 'react-icons/io'
 import { BiArchiveIn } from "react-icons/bi";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight,  MdOutlineDriveFileMove, MdOutlineReport, MdOutlineWatchLater } from "react-icons/md";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdOutlineDriveFileMove, MdOutlineReport, MdOutlineWatchLater } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
 import { MdOutlineMarkEmailUnread } from "react-icons/md";
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { motion } from 'framer-motion'
+import { setArchievedMails } from '../redux/appSlice';
 
 function Mail() {
   const navigate = useNavigate()
   const { selectedEmail, sideBarOpen } = useSelector(store => store.appSlice)
   const params = useParams()
+
+  const dispatch = useDispatch()
 
   const deleteMailById = async (id) => {
     try {
@@ -35,7 +38,7 @@ function Mail() {
             <IoMdArrowBack size='20px' />
           </div>
           <div className='p-2 rounded-full hover:bg-gray-100 cursor-pointer'>
-            <BiArchiveIn size='20px' />
+            <BiArchiveIn size='20px' onClick={() => dispatch(setArchievedMails(selectedEmail))} />
           </div>
           <div className='p-2 rounded-full hover:bg-gray-100 cursor-pointer'>
             <MdOutlineReport size='20px' />

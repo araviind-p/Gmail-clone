@@ -16,6 +16,7 @@ function Login() {
                 email: result.user.email,
                 photoURL: result.user.photoURL
             }))
+          
         } catch (error) {
             console.log(error);
         }

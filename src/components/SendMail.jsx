@@ -11,7 +11,8 @@ function SendMail() {
     const [formData, setFormData] = useState({
         to: "",
         subject: "",
-        message: ""
+        message: "",
+        starred:false
     })
     const changeHandler = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -23,6 +24,7 @@ function SendMail() {
             to: formData.to,
             subject: formData.subject,
             message: formData.message,
+            starred:false,
             createdAt: serverTimestamp()
         })
         dispatch(setOpen(false))

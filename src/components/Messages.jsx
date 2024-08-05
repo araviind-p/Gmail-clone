@@ -3,15 +3,18 @@ import Message from './Message'
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { db } from '../firebase'
 import { useDispatch, useSelector } from 'react-redux'
-import { setEmails } from '../redux/appSlice'
+import { setEmails, setLoading, setStarredMails } from '../redux/appSlice'
 import Sidebar from './Sidebar'
+import ClipLoader from "react-spinners/ClipLoader";
 
 function Messages() {
   const { emails, searchText, sideBarOpen } = useSelector(store => store.appSlice)
   const [tempEmails, setTempEmails] = useState(emails);
-  const dispatch = useDispatch()
 
+  const dispatch = useDispatch()
+  const { loading } = useSelector(state => state.appSlice)
   useEffect(() => {
+    dispatch(setLoading(true))
     const q = query(collection(db, "emails"), orderBy('createdAt', 'desc'))
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const allEmails = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
@@ -19,9 +22,11 @@ function Messages() {
       dispatch(setEmails(allEmails))
 
     })
+    dispatch(setLoading(false))
     //cleanup
     return () => unsubscribe();
   }, [])
+
 
   useEffect(() => {
     const filteredEmail = emails?.filter((email) => {
@@ -29,20 +34,26 @@ function Messages() {
     })
     setTempEmails(filteredEmail)
   }, [searchText, emails])
+
   return (
-    <div className='overflow-x-hidden w-[98%] '>
-
-      {/* {
-        sideBarOpen && (
-          <Sidebar />
-        )
-      } */}
-
+    <>
       {
-        (tempEmails && !sideBarOpen) && tempEmails?.map((email) => <Message key={email.id} email={email} />)
-      }
+        loading ? (
+          <div className='flex items-center justify-center h-96 w-screen'>
+            <ClipLoader size={50} aria-label="Loading Spinner" data-testid="loader" />
+          </div>
+        ) : (
 
-    </div>
+          <div className='overflow-x-hidden w-[98%] '>
+
+            {
+              (tempEmails && !sideBarOpen) && tempEmails?.map((email) => <Message key={email.id} email={email} />)
+            }
+
+          </div>
+        )
+      }
+    </>
   )
 }
 

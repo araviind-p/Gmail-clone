@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { RouterProvider, createBrowserRouter, useNavigate } from 'react-router-dom'
 import './App.css'
 import Navbar from './components/shared/Navbar'
 import Body from './components/Body'
@@ -7,6 +7,8 @@ import Mail from './components/Mail'
 import SendMail from './components/SendMail'
 import Login from './components/Login'
 import { useSelector } from 'react-redux'
+import ArchievedMails from './components/ArchievedMails'
+import StarredMails from './components/StarredMails'
 
 const router = createBrowserRouter([
   {
@@ -20,13 +22,21 @@ const router = createBrowserRouter([
       {
         path: "/mail/:id",
         element: <Mail />
+      },
+      {
+        path: "/archieved",
+        element: <ArchievedMails />
+      },
+      {
+        path: "/starred",
+        element: <StarredMails />
       }
     ]
   }
 ])
 
 function App() {
-  const {user} = useSelector(store => store.appSlice)
+  const { user } = useSelector(store => store.appSlice)
   return (
     <div className='bg-[#F6F8FC] h-dvh w-dvh overflow-hidden'>
       {
