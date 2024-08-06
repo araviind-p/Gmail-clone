@@ -6,21 +6,24 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { PiDotsNineBold } from "react-icons/pi";
 import Avatar from 'react-avatar';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSearchText, setSideBarOpen, setUser } from '../../redux/appSlice';
+import { setSearchText, setSideBarOpen, setTempEmails, setUser } from '../../redux/appSlice';
 import { AnimatePresence, motion } from 'framer-motion';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
+import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
     const [input, setInput] = useState('')
     const [toggle, setToggle] = useState(false)
 
-    const { user, sideBarOpen } = useSelector(store => store.appSlice)
-    const dispatch = useDispatch()
+    const navigate = useNavigate()
 
+    const { user, sideBarOpen, tempEmails } = useSelector(store => store.appSlice)
+    const dispatch = useDispatch()
     const signOutHandler = () => {
         signOut(auth).then(() => {
             dispatch(setUser(null))
+            localStorage.removeItem("userLoggedIn")
         }).catch((err) => {
             console.log(err);
         })
@@ -30,6 +33,8 @@ function Navbar() {
         dispatch(setSearchText(input))
     }, [input])
 
+
+
     return (
         <div className='flex justify-between items-center mx-3 h-16'>
             <div className='flex items-center gap-10'>
@@ -37,16 +42,28 @@ function Navbar() {
                     <div className='p-3 rounded-full hover:bg-gray-100 cursor-pointer '>
                         <RxHamburgerMenu onClick={() => dispatch(setSideBarOpen(!sideBarOpen))} size={"20px"} />
                     </div>
-                    <img className='w-8' src="https://mailmeteor.com/logos/assets/PNG/Gmail_Logo_512px.png" alt="gmail-logo" />
-                    <h1 className='hidden md:block text-2xl text-gray-500 font-medium'>Gmail</h1>
+                    <img
+                        onClick={() => {
+                            navigate('/')
+                            dispatch(setSideBarOpen(false))
+                        }}
+                        className='w-8 cursor-pointer' src="https://mailmeteor.com/logos/assets/PNG/Gmail_Logo_512px.png" alt="gmail-logo" />
+                    <h1
+                        onClick={() => {
+                            navigate('/')
+                            dispatch(setSideBarOpen(false))
+                        }}
+                        className='hidden md:block text-2xl text-gray-500 font-medium cursor-pointer'>Gmail</h1>
                 </div>
             </div>
-            <div className='w-[30%] md:w-[50%] grow mx-2'>
+            <div className='w-[30%] md:w-[50%]  grow mx-2'>
                 <div className='flex items-center bg-[#EAF1FB] px-2 py-3 my-3 rounded-full'>
                     <IoIosSearch size={'24px'} className='text-gray-700' />
                     <input
                         value={input}
-                        onChange={e => setInput(e.target.value)}
+                        onChange={(e) => {
+                            setInput(e.target.value)
+                            dispatch(setSearchText(e.target.value))}}
                         type="text"
                         className='rounded-full w-full bg-transparent outline-none px-1'
                         placeholder='Search Mail'

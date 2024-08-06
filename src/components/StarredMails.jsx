@@ -36,8 +36,8 @@ function StarredMails() {
                 </div>
             ) : starredMails.length === 0 ? (
                 <p className='text-gray-500 text-center text-lg font-medium mt-[15%]'>
-                No starred mails found.
-            </p>
+                    No starred mails found.
+                </p>
             ) : (
                 <div className='overflow-x-hidden w-[98%] '>
                     {starredMails.map(email => <Message key={email.id} email={email} />)}

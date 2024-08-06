@@ -1,10 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { MdCropSquare, MdInbox, MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 import { FaCaretDown, FaUserFriends } from "react-icons/fa";
 import { IoMdMore, IoMdRefresh } from 'react-icons/io';
 import { GoTag } from "react-icons/go";
 import Messages from './Messages';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCheckedMails, setTempEmails } from '../redux/appSlice';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const mailType = [
     {
@@ -22,13 +25,50 @@ const mailType = [
 ]
 
 function Inbox() {
-    const [mailTypeSelected, setMailTypeSelected] = useState(0)
-    const { sideBarOpen } = useSelector(store => store.appSlice)
+    const [mailTypeSelected, setMailTypeSelected] = useState(0);
+    const { sideBarOpen, emails, checkedMails, tempEmails } = useSelector(store => store.appSlice);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const q = query(collection(db, "emails"), orderBy('createdAt', 'desc'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const allEmails = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+            // dispatch(setTempEmails(allEmails));
+            console.log('Temp Emails Type:', typeof allEmails);
+            console.log('Temp Emails Content:', allEmails);
+        });
+        // Cleanup the subscription on component unmount
+        return () => unsubscribe();
+    }, [dispatch]);
+
+    const selectAllMessages = () => {
+        // Determine if all emails are currently checked
+        const q = query(collection(db, "emails"), orderBy('createdAt', 'desc'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const allEmails = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+            dispatch(setCheckedMails(allEmails));
+            console.log('Temp Emails Type:', typeof allEmails);
+            console.log('Temp Emails Content:', allEmails);
+        });
+        // const allChecked = checkedMails.length === tempEmails.length;
+
+        // if (allChecked) {
+        //     // If all emails are checked, uncheck all
+        //     dispatch(setCheckedMails([]));
+        // } else {
+        //     // Otherwise, check all emails
+        //     dispatch(setCheckedMails(tempEmails));
+        // }
+    };
+
     return (
         <div className={`${sideBarOpen && "hidden"} flex-1 rounded-xl w-dvh`}>
             <div className='flex items-center justify-between px-4 overflow-y-hidden'>
                 <div className='flex items-center gap-2 text-gray-700 py-2 '>
-                    <div className='flex items-center gap-1'>
+                    <div
+                        className='flex items-center gap-1 cursor-pointer'
+                        onClick={selectAllMessages}
+                    >
                         <MdCropSquare size={'20px'} />
                         <FaCaretDown size={'20px'} />
                     </div>
@@ -72,4 +112,4 @@ function Inbox() {
     )
 }
 
-export default Inbox
+export default Inbox;

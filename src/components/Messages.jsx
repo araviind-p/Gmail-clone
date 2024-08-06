@@ -3,16 +3,17 @@ import Message from './Message'
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { db } from '../firebase'
 import { useDispatch, useSelector } from 'react-redux'
-import { setEmails, setLoading, setStarredMails } from '../redux/appSlice'
+import { setEmails, setLoading, setStarredMails, setTempEmails } from '../redux/appSlice'
 import Sidebar from './Sidebar'
 import ClipLoader from "react-spinners/ClipLoader";
 
 function Messages() {
-  const { emails, searchText, sideBarOpen } = useSelector(store => store.appSlice)
-  const [tempEmails, setTempEmails] = useState(emails);
+  const { emails, searchText, sideBarOpen, loading, tempEmails } = useSelector(store => store.appSlice)
+  // const [tempEmails, setTempEmails] = useState(emails);
+
 
   const dispatch = useDispatch()
-  const { loading } = useSelector(state => state.appSlice)
+  // dispatch(setTempEmails(emails))
   useEffect(() => {
     dispatch(setLoading(true))
     const q = query(collection(db, "emails"), orderBy('createdAt', 'desc'))
@@ -28,12 +29,25 @@ function Messages() {
   }, [])
 
 
+  // useEffect(() => {
+  //   const filteredEmail = emails?.filter((email) => {
+  //     return email?.subject?.toLowerCase().includes(searchText.toLowerCase()) || email?.to?.toLowerCase().includes(searchText.toLowerCase()) || email?.message?.toLowerCase().includes(searchText.toLowerCase())
+  //   })
+  //   dispatch(setTempEmails(filteredEmail))
+  // }, [searchText, emails, dispatch])
   useEffect(() => {
+    console.log('Emails:', emails);
+    console.log('Search Text:', searchText);
     const filteredEmail = emails?.filter((email) => {
-      return email?.subject?.toLowerCase().includes(searchText.toLowerCase()) || email?.to?.toLowerCase().includes(searchText.toLowerCase()) || email?.message?.toLowerCase().includes(searchText.toLowerCase())
-    })
-    setTempEmails(filteredEmail)
-  }, [searchText, emails])
+      return email?.subject?.toLowerCase().includes(searchText.toLowerCase()) ||
+        email?.to?.toLowerCase().includes(searchText.toLowerCase()) ||
+        email?.message?.toLowerCase().includes(searchText.toLowerCase());
+    });
+    console.log('Filtered Emails:', filteredEmail);
+    console.log("filtered type..........", typeof filteredEmail);
+    dispatch(setTempEmails(filteredEmail));
+  }, [searchText, emails, dispatch]);
+
 
   return (
     <>

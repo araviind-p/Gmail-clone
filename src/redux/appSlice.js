@@ -11,26 +11,28 @@ const appSlice = createSlice({
         sideBarOpen: false,
         archievedMails: {},
         starredMails: [],
-        loading: false
+        loading: false,
+        checkedMails: [],
+        tempEmails: [] // Initialize as an empty array
     },
     reducers: {
         setOpen: (state, action) => {
-            state.open = action.payload
+            state.open = action.payload;
         },
         setEmails: (state, action) => {
-            state.emails = action.payload
+            state.emails = action.payload;
         },
         setSelectedEmail: (state, action) => {
-            state.selectedEmail = action.payload
+            state.selectedEmail = action.payload;
         },
         setSearchText: (state, action) => {
-            state.searchText = action.payload
+            state.searchText = action.payload;
         },
         setUser: (state, action) => {
-            state.user = action.payload
+            state.user = action.payload;
         },
         setSideBarOpen: (state, action) => {
-            state.sideBarOpen = action.payload
+            state.sideBarOpen = action.payload;
         },
         setArchievedMails: (state, action) => {
             const email = action.payload; // payload is expected to be the entire email object
@@ -45,13 +47,40 @@ const appSlice = createSlice({
             state.starredMails = action.payload; // Set payload directly as array
         },
         setLoading: (state, action) => {
-            state.loading = action.payload
-        }
+            state.loading = action.payload;
+        },
+        setCheckedMails: (state, action) => {
+            const payload = action.payload;
+
+            if (Array.isArray(payload)) {
+                // Handle bulk selection
+                // if (payload.length === state.emails.length) {
+                //     // If payload length matches all emails, uncheck all
+                //     state.checkedMails = [];
+                // } else {
+                // Otherwise, select all emails
+                state.checkedMails = payload;
+                // }
+            } else if (payload && payload.id) {
+                // Handle individual selection
+                const isAlreadyChecked = state.checkedMails.some(mail => mail.id === payload.id);
+                if (isAlreadyChecked) {
+                    state.checkedMails = state.checkedMails.filter(mail => mail.id !== payload.id); // Remove from checkedMails
+                } else {
+                    state.checkedMails = [...state.checkedMails, payload]; // Add to checkedMails
+                }
+            }
+        },
+        setTempEmails: (state, action) => {
+            console.log('Setting tempEmails with:', action.payload);
+            // Make sure action.payload is an array
+            state.tempEmails = action.payload;
+        },
     }
 })
 
 export const {
     setOpen, setEmails, setSelectedEmail, setSearchText, setUser, setSideBarOpen,
-    setArchievedMails, setStarredMails,setLoading
+    setArchievedMails, setStarredMails, setLoading, setCheckedMails, setTempEmails
 } = appSlice.actions;
-export default appSlice.reducer
+export default appSlice.reducer;

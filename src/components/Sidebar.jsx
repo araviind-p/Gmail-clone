@@ -4,7 +4,7 @@ import { LuPencil } from "react-icons/lu";
 import { MdOutlineDrafts, MdOutlineKeyboardArrowDown, MdOutlineWatchLater } from "react-icons/md";
 import { TbSend2 } from "react-icons/tb";
 import { useDispatch, useSelector } from 'react-redux';
-import { setLoading, setOpen, setSideBarOpen } from '../redux/appSlice';
+import { setCheckedMails, setLoading, setOpen, setSideBarOpen } from '../redux/appSlice';
 import ArchievedMails from './ArchievedMails';
 import { useNavigate } from 'react-router-dom';
 
@@ -47,11 +47,12 @@ function Sidebar() {
             dispatch(setLoading(true))
             dispatch(setSideBarOpen(false))
             dispatch(setLoading(false))
+            dispatch(setCheckedMails([]))
             navigate('/starred')
         }
     }
     return (
-        <div className={`${sideBarOpen}? 'block': 'hidden' w-[100%] md:block md:w-[15%]`}>
+        <div className={`${sideBarOpen}? 'block': 'hidden' w-[35%] h-dvh md:block bg-white bg-opacity-95 md:w-[13%]`}>
             <div className='p-3'>
                 <button onClick={() => dispatch(setOpen(true))} className='flex items-center gap-2 p-4 rounded-2xl hover:shadow-md bg-[#C2E7FF]'>
                     <LuPencil size={'24px'} />
