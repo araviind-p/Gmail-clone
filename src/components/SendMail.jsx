@@ -19,7 +19,6 @@ function SendMail() {
     }
     const submitHandler = async (e) => {
         e.preventDefault()
-        console.log(formData);
         await addDoc(collection(db, "emails"), {
             to: formData.to,
             subject: formData.subject,

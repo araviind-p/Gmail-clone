@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { MdCropSquare, MdInbox, MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
-import { FaCaretDown, FaUserFriends } from "react-icons/fa";
+import { MdCropSquare, MdInbox, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdDeleteOutline } from 'react-icons/md'
+import { FaCaretDown, FaCheckCircle, FaUserFriends } from "react-icons/fa";
 import { IoMdMore, IoMdRefresh } from 'react-icons/io';
 import { GoTag } from "react-icons/go";
 import Messages from './Messages';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCheckedMails, setTempEmails } from '../redux/appSlice';
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { resetCheckedCount, setCheckedCount, setCheckedMails, setTempEmails } from '../redux/appSlice';
+import { collection, deleteDoc, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const mailType = [
@@ -26,7 +26,9 @@ const mailType = [
 
 function Inbox() {
     const [mailTypeSelected, setMailTypeSelected] = useState(0);
-    const { sideBarOpen, emails, checkedMails, tempEmails } = useSelector(store => store.appSlice);
+    const { sideBarOpen, emails, checkedMails, tempEmails,
+        checkedCount
+    } = useSelector(store => store.appSlice);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -34,8 +36,6 @@ function Inbox() {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const allEmails = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
             // dispatch(setTempEmails(allEmails));
-            console.log('Temp Emails Type:', typeof allEmails);
-            console.log('Temp Emails Content:', allEmails);
         });
         // Cleanup the subscription on component unmount
         return () => unsubscribe();
@@ -46,30 +46,47 @@ function Inbox() {
         const q = query(collection(db, "emails"), orderBy('createdAt', 'desc'));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const allEmails = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-            dispatch(setCheckedMails(allEmails));
-            console.log('Temp Emails Type:', typeof allEmails);
-            console.log('Temp Emails Content:', allEmails);
+            if (checkedMails.length === allEmails.length) {
+                dispatch(setCheckedMails([]))
+                dispatch(resetCheckedCount(0))
+            } else {
+                dispatch(setCheckedMails(allEmails));
+                dispatch(resetCheckedCount(tempEmails.length))
+            }
         });
-        // const allChecked = checkedMails.length === tempEmails.length;
-
-        // if (allChecked) {
-        //     // If all emails are checked, uncheck all
-        //     dispatch(setCheckedMails([]));
-        // } else {
-        //     // Otherwise, check all emails
-        //     dispatch(setCheckedMails(tempEmails));
-        // }
     };
-
+    const handleDelete = async () => {
+        // Loop through each checked email and delete it
+        for (const email of checkedMails) {
+            try {
+                await deleteDoc(doc(db, "emails", email.id));
+            } catch (error) {
+                console.error("Error deleting email: ", error);
+            }
+        }
+        // Clear checked mails and reset count
+        dispatch(setCheckedMails([]));
+        dispatch(resetCheckedCount(0));
+    };
     return (
         <div className={`${sideBarOpen && "hidden"} flex-1 rounded-xl w-dvh`}>
             <div className='flex items-center justify-between px-4 overflow-y-hidden'>
                 <div className='flex items-center gap-2 text-gray-700 py-2 '>
                     <div
-                        className='flex items-center gap-1 cursor-pointer'
-                        onClick={selectAllMessages}
+                        className='flex items-center gap-1 '
+
                     >
-                        <MdCropSquare size={'20px'} />
+                        {
+                            tempEmails.length == 0 ? (
+                                <MdCropSquare size={'20px'} className='cursor-pointer' onClick={selectAllMessages} />
+                            ) :
+                                checkedCount == tempEmails.length ? (
+                                    <FaCheckCircle size={'20px'} className='cursor-pointer text-blue-500' onClick={selectAllMessages} />
+                                ) : (
+
+                                    <MdCropSquare size={'20px'} className='cursor-pointer' onClick={selectAllMessages} />
+                                )
+                        }
                         <FaCaretDown size={'20px'} />
                     </div>
                     <div className='p-2 rounded-full hover:bg-gray-100 cursor-pointer'>
@@ -78,8 +95,14 @@ function Inbox() {
                     <div className='p-2 rounded-full hover:bg-gray-100 cursor-pointer'>
                         <IoMdMore size={'20px'} />
                     </div>
+
                 </div>
                 <div className='flex items-center gap-2'>
+                    {
+                        checkedCount > 0 && (
+                            <MdDeleteOutline size={'20px'} className='mr-3 cursor-pointer' onClick={handleDelete} />
+                        )
+                    }
                     <p className=' text-sm text-gray-500'>1-50 of 1000</p>
                     <button className='hover:rounded-full hover:bg-gray-100'><MdKeyboardArrowLeft size="24px" /></button>
                     <button className='hover:rounded-full hover:bg-gray-100'><MdKeyboardArrowRight size="24px" /></button>

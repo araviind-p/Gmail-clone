@@ -16,7 +16,6 @@ function Login() {
         try {
             dispatch(setLoading(true));
             const result = await signInWithPopup(auth, provider);
-            console.log(result);
             dispatch(setUser({
                 displayName: result.user.displayName,
                 email: result.user.email,
@@ -61,9 +60,6 @@ function Login() {
 
     const shouldShowLoader = initializing || loading || showLoader;
 
-    console.log('initializing:', initializing);
-    console.log('loading:', loading);
-    console.log('showLoader:', showLoader);
 
     return (
         <div className='w-dvh h-dvh flex justify-center items-center bg-gray-200'>

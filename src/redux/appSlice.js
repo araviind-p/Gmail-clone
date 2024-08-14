@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const serializeTimestamp = (timestamp) => timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000;
+
 const appSlice = createSlice({
     name: "appSlice",
     initialState: {
@@ -13,14 +15,18 @@ const appSlice = createSlice({
         starredMails: [],
         loading: false,
         checkedMails: [],
-        tempEmails: [] // Initialize as an empty array
+        tempEmails: [], // Initialize as an empty array
+        checkedCount: 0
     },
     reducers: {
         setOpen: (state, action) => {
             state.open = action.payload;
         },
         setEmails: (state, action) => {
-            state.emails = action.payload;
+            state.emails = action.payload.map(email => ({
+                ...email,
+                createdAt: email.createdAt ? serializeTimestamp(email.createdAt) : null
+            }));
         },
         setSelectedEmail: (state, action) => {
             state.selectedEmail = action.payload;
@@ -39,7 +45,10 @@ const appSlice = createSlice({
             if (email && email.id) {
                 state.archievedMails = {
                     ...state.archievedMails,
-                    [email.id]: email
+                    [email.id]: {
+                        ...email,
+                        createdAt: email.createdAt ? serializeTimestamp(email.createdAt) : null
+                    }
                 };
             }
         },
@@ -54,13 +63,7 @@ const appSlice = createSlice({
 
             if (Array.isArray(payload)) {
                 // Handle bulk selection
-                // if (payload.length === state.emails.length) {
-                //     // If payload length matches all emails, uncheck all
-                //     state.checkedMails = [];
-                // } else {
-                // Otherwise, select all emails
                 state.checkedMails = payload;
-                // }
             } else if (payload && payload.id) {
                 // Handle individual selection
                 const isAlreadyChecked = state.checkedMails.some(mail => mail.id === payload.id);
@@ -72,15 +75,21 @@ const appSlice = createSlice({
             }
         },
         setTempEmails: (state, action) => {
-            console.log('Setting tempEmails with:', action.payload);
             // Make sure action.payload is an array
             state.tempEmails = action.payload;
         },
+        setCheckedCount: (state, action) => {
+            state.checkedCount = state.checkedCount + action.payload;
+        },
+        resetCheckedCount: (state, action) => {
+            state.checkedCount = action.payload;
+        },
     }
-})
+});
 
 export const {
     setOpen, setEmails, setSelectedEmail, setSearchText, setUser, setSideBarOpen,
-    setArchievedMails, setStarredMails, setLoading, setCheckedMails, setTempEmails
+    setArchievedMails, setStarredMails, setLoading, setCheckedMails, setTempEmails,
+    setCheckedCount, resetCheckedCount
 } = appSlice.actions;
 export default appSlice.reducer;

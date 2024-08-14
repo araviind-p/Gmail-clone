@@ -19,7 +19,6 @@ function Messages() {
     const q = query(collection(db, "emails"), orderBy('createdAt', 'desc'))
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const allEmails = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-      console.log(allEmails);
       dispatch(setEmails(allEmails))
 
     })
@@ -36,15 +35,11 @@ function Messages() {
   //   dispatch(setTempEmails(filteredEmail))
   // }, [searchText, emails, dispatch])
   useEffect(() => {
-    console.log('Emails:', emails);
-    console.log('Search Text:', searchText);
     const filteredEmail = emails?.filter((email) => {
       return email?.subject?.toLowerCase().includes(searchText.toLowerCase()) ||
         email?.to?.toLowerCase().includes(searchText.toLowerCase()) ||
         email?.message?.toLowerCase().includes(searchText.toLowerCase());
     });
-    console.log('Filtered Emails:', filteredEmail);
-    console.log("filtered type..........", typeof filteredEmail);
     dispatch(setTempEmails(filteredEmail));
   }, [searchText, emails, dispatch]);
 

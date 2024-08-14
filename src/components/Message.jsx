@@ -4,7 +4,7 @@ import { FaCheckCircle } from 'react-icons/fa'; // Import the FaCheckCircle icon
 import { RiStarLine } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCheckedMails, setLoading, setSelectedEmail, setStarredMails } from '../redux/appSlice';
+import { setCheckedCount, setCheckedMails, setLoading, setSelectedEmail, setStarredMails } from '../redux/appSlice';
 import { motion } from 'framer-motion';
 import { doc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -13,7 +13,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 function Message({ email }) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { loading, checkedMails } = useSelector(state => state.appSlice);
+    const { loading, checkedMails, tempEmails, checkedCount } = useSelector(state => state.appSlice);
     const [checked, setChecked] = useState(false); // Local state for checkbox
 
     useEffect(() => {
@@ -49,6 +49,11 @@ function Message({ email }) {
     };
 
     const handleCheckboxClick = () => {
+        if (checked) {
+            dispatch(setCheckedCount(-1))
+        } else {
+            dispatch(setCheckedCount(1))
+        }
         dispatch(setCheckedMails(email)); // Dispatch the entire email object
         setChecked(!checked); // Toggle the local checkbox state
     };
@@ -59,7 +64,7 @@ function Message({ email }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
             className={`flex items-start justify-between border-b border-gray-200 px-4 py-3 text-sm hover:cursor-pointer hover:shadow-md
-            ${checked ? 'bg-gray-200': ''} `}
+            ${checked ? 'bg-gray-200' : ''} `}
         >
             {loading ? (
                 <div className='flex items-center justify-center h-96 w-screen'>
@@ -68,8 +73,8 @@ function Message({ email }) {
             ) : (
                 <>
                     <div className='flex items-center gap-3'>
-                        <div 
-                            onClick={handleCheckboxClick} 
+                        <div
+                            onClick={handleCheckboxClick}
                             className={`flex-none ${checked ? 'text-blue-500' : 'text-gray-300'}`}
                         >
                             {checked ? (
