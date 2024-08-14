@@ -29,7 +29,7 @@ function StarredMails() {
     }, [dispatch]);
 
     return (
-        <div className='overflow-x-hidden w-[98%] '>
+        <div className='overflow-x-hidden w-11/12'>
             {loading ? (
                 <div className='flex items-center justify-center h-96 w-screen'>
                     <ClipLoader size={50} aria-label="Loading Spinner" data-testid="loader" />
